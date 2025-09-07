@@ -1,4 +1,4 @@
-package main
+package geocaching
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-type searchTerms struct {
+type SearchTerms struct {
 	Latitude      float32
 	Longitude     float32
 	RadiusMeters  int
@@ -23,7 +23,7 @@ type APIConfig struct {
 
 type configStore struct {
 	Configuration APIConfig
-	SearchTerms   searchTerms
+	SearchTerms   SearchTerms
 	DBFilename    string
 }
 

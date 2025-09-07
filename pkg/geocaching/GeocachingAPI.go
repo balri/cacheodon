@@ -1,4 +1,4 @@
-package main
+package geocaching
 
 import (
 	"bytes"
@@ -240,7 +240,7 @@ type GeocacheLogSearchResponse struct {
 
 // This runs the query against the geocaching API and returns a slice of up to `take` geocaches,
 // and the total number of geocaches matching that query
-func (g *GeocachingAPI) searchQuery(st searchTerms, skip, take int) ([]Geocache, int, error) {
+func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache, int, error) {
 	var err error
 	req, err := http.NewRequest("GET", g.config.GeocachingAPIURL+"/api/proxy/web/search/v2", nil)
 	if err != nil {
@@ -463,7 +463,7 @@ func (g *GeocachingAPI) GetLogs(geocache *Geocache) ([]GeocacheLog, error) {
 }
 
 // This finds all geocaches
-func (g *GeocachingAPI) Search(st searchTerms) ([]Geocache, error) {
+func (g *GeocachingAPI) Search(st SearchTerms) ([]Geocache, error) {
 	var err error
 	var results []Geocache
 	log.Println("Running a search")
