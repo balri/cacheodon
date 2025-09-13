@@ -33,7 +33,7 @@ func main() {
 	searchTerms := geocaching.SearchTerms{
 		Latitude:      -27.4698,
 		Longitude:     153.0251,
-		RadiusMeters:  25000,
+		RadiusMeters:  50000,
 		IgnorePremium: false,
 		ShowDisabled:  BoolPtr(false),
 		SortAsc:       true,
@@ -42,15 +42,9 @@ func main() {
 		HideOwned:     BoolPtr(true),
 		NotFoundBy:    []string{os.Getenv("GEOCACHING_CLIENT_ID")},
 		CacheType: []geocaching.CacheType{
-			geocaching.Traditional,
-			geocaching.Multi,
-			geocaching.Virtual,
-			geocaching.Letterbox,
 			geocaching.Unknown,
-			geocaching.Webcam,
-			geocaching.Earthcache,
-			geocaching.Wherigo,
 		},
+		Corrected: BoolPtr(false),
 	}
 
 	caches, err := client.Search(searchTerms)

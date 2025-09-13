@@ -249,15 +249,138 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 	query := req.URL.Query()
 	query.Add("skip", fmt.Sprint(skip))
 	query.Add("take", fmt.Sprint(take))
-	query.Add("asc", "true")
-	// Note: Sorting by anything other than distance is a "premium feature." This means we
-	// have to query all pages of results and sort them ourselves.
-	query.Add("sort", "distance")
+	query.Add("asc", fmt.Sprint(st.SortAsc))
+	query.Add("sort", fmt.Sprint(st.Sort))
 	query.Add("properties", "callernote")
 	query.Add("origin", fmt.Sprintf("%f,%f", st.Latitude, st.Longitude))
 	query.Add("rad", fmt.Sprint(st.RadiusMeters))
-	query.Add("oid", "3356")
-	query.Add("ot", "city")
+	if st.OperationID != "" {
+		query.Add("oid", st.OperationID)
+	}
+	if st.OperationType != "" {
+		query.Add("op", fmt.Sprint(st.OperationType))
+	}
+	if st.ShowPremium != nil {
+		if *st.ShowPremium {
+			query.Add("sp", "1")
+		} else {
+			query.Add("sp", "0")
+		}
+	}
+	if st.ShowDisabled != nil {
+		if *st.ShowDisabled {
+			query.Add("sd", "1")
+		} else {
+			query.Add("sd", "0")
+		}
+	}
+	if st.ShowArchived != nil {
+		if *st.ShowArchived {
+			query.Add("sa", "1")
+		} else {
+			query.Add("sa", "0")
+		}
+	}
+	if st.SearchTerm != "" {
+		query.Add("st", st.SearchTerm)
+	}
+	if st.HideOwned != nil {
+		if *st.HideOwned {
+			query.Add("ho", "1")
+		} else {
+			query.Add("ho", "0")
+		}
+	}
+	if st.HideFound != nil {
+		if *st.HideFound {
+			query.Add("hf", "1")
+		} else {
+			query.Add("hf", "0")
+		}
+	}
+	if len(st.FillGrid) > 0 {
+		query.Add("m", strings.Join(st.FillGrid, ","))
+	}
+	if len(st.NotFoundBy) > 0 {
+		for _, v := range st.NotFoundBy {
+			query.Add("nfb", fmt.Sprint(v))
+		}
+	}
+	if st.CacheName != "" {
+		query.Add("cn", st.CacheName)
+	}
+	if len(st.CacheSize) > 0 {
+		var cs []string
+		for _, v := range st.CacheSize {
+			cs = append(cs, fmt.Sprint(v))
+		}
+		query.Add("cs", strings.Join(cs, ","))
+	}
+	if len(st.CacheType) > 0 {
+		var ct []string
+		for _, v := range st.CacheType {
+			ct = append(ct, fmt.Sprint(v))
+		}
+		query.Add("ct", strings.Join(ct, ","))
+	}
+	if len(st.Difficulty) > 0 {
+		var d []string
+		for _, v := range st.Difficulty {
+			d = append(d, fmt.Sprint(v))
+		}
+		query.Add("d", strings.Join(d, ","))
+	}
+	if len(st.Terrain) > 0 {
+		var t []string
+		for _, v := range st.Terrain {
+			t = append(t, fmt.Sprint(v))
+		}
+		query.Add("t", strings.Join(t, ","))
+	}
+	if st.FoundAfter != "" {
+		query.Add("fad", fmt.Sprint(st.FoundAfter))
+	} else if st.FoundBefore != "" {
+		query.Add("fbd", fmt.Sprint(st.FoundBefore))
+	} else if st.FoundEnd != "" && st.FoundStart != "" {
+		query.Add("fed", fmt.Sprint(st.FoundEnd))
+		query.Add("fsd", fmt.Sprint(st.FoundStart))
+	} else if st.FoundOn != "" {
+		query.Add("fod", fmt.Sprint(st.FoundOn))
+	}
+	if st.PlacedAfter != "" {
+		query.Add("pad", fmt.Sprint(st.PlacedAfter))
+	} else if st.PlacedBefore != "" {
+		query.Add("pbd", fmt.Sprint(st.PlacedBefore))
+	} else if st.PlacedEnd != "" && st.PlacedStart != "" {
+		query.Add("ped", fmt.Sprint(st.PlacedEnd))
+		query.Add("psd", fmt.Sprint(st.PlacedStart))
+	} else if st.PlacedOn != "" {
+		query.Add("pod", fmt.Sprint(st.PlacedOn))
+	}
+	if len(st.FoundBy) > 0 {
+		for _, v := range st.FoundBy {
+			query.Add("fb", fmt.Sprint(v))
+		}
+	}
+	if st.HiddenBy != "" {
+		query.Add("hb", fmt.Sprint(st.HiddenBy))
+	}
+	if len(st.Attributes) > 0 {
+		var att []string
+		for _, v := range st.Attributes {
+			att = append(att, fmt.Sprint(v))
+		}
+		query.Add("att", strings.Join(att, ","))
+	}
+	if st.Corrected != nil {
+		query.Add("cc", fmt.Sprint(*st.Corrected))
+	}
+	if st.FavouriteCount > 0 {
+		query.Add("fp", fmt.Sprint(st.FavouriteCount))
+	}
+	if st.PersonalNote != nil {
+		query.Add("pn", fmt.Sprint(*st.PersonalNote))
+	}
 	req.URL.RawQuery = query.Encode()
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0")
