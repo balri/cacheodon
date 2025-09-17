@@ -373,13 +373,21 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 		query.Add("att", strings.Join(att, ","))
 	}
 	if st.Corrected != nil {
-		query.Add("cc", fmt.Sprint(*st.Corrected))
+		if *st.Corrected {
+			query.Add("cc", "1")
+		} else {
+			query.Add("cc", "0")
+		}
 	}
 	if st.FavouriteCount > 0 {
 		query.Add("fp", fmt.Sprint(st.FavouriteCount))
 	}
 	if st.PersonalNote != nil {
-		query.Add("pn", fmt.Sprint(*st.PersonalNote))
+		if *st.PersonalNote {
+			query.Add("pn", "1")
+		} else {
+			query.Add("pn", "0")
+		}
 	}
 	req.URL.RawQuery = query.Encode()
 
