@@ -147,7 +147,7 @@ func (g *GeocachingAPI) Auth(clientID, clientSecret string) error {
 	return nil
 }
 
-type GocachePostedCoordinates struct {
+type GeocacheCoordinates struct {
 	Latitude  float64 `json:"latitude" fake:"{number:1,180}"`
 	Longitude float64 `json:"longitude" fake:"{number:1,180}"`
 }
@@ -164,28 +164,30 @@ type GeocacheAttributes struct {
 }
 
 type Geocache struct {
-	ID                int                      `json:"id" fake:"{number:1,100000}"`
-	Name              string                   `json:"name" fake:"{loremipsumword:1}"`
-	Code              string                   `json:"code" fake:"{regex:GC[1-9]{5}}"` // GC12345
-	PremiumOnly       bool                     `json:"premiumOnly" fake:"{bool}"`
-	FavoritePoints    int                      `json:"favoritePoints" fake:"{number:1,1000}"`
-	GeocacheType      int                      `json:"geocacheType" fake:"{number:1,10}"`
-	ContainerType     int                      `json:"containerType" fake:"{number:1,10}"`
-	Difficulty        float64                  `json:"difficulty" fake:"{number:1,5}"`
-	Terrain           float64                  `json:"terrain" fake:"{number:1,5}"`
-	CacheStatus       int                      `json:"cacheStatus" fake:"{number:1,10}"`
-	PostedCoordinates GocachePostedCoordinates `json:"postedCoordinates"`
-	DetailsURL        string                   `json:"detailsUrl" fake:"{url}"`
-	HasGeotour        bool                     `json:"hasGeotour" fake:"{bool}"`
-	PlacedDate        string                   `json:"placedDate" fake:"{date}"`
-	Owner             GeocacheOwner            `json:"owner"`
-	LastFoundDate     string                   `json:"lastFoundDate" fake:"{date}"`
-	TrackableCount    int                      `json:"trackableCount" fake:"{number:1,100}"`
-	Region            string                   `json:"region" fake:"{city}"`
-	Country           string                   `json:"country" fake:"{country}"`
-	Attributes        []GeocacheAttributes     `json:"attributes"`
-	Distance          string                   `json:"distance" fake:"{number:1,100}"`
-	Bearing           string                   `json:"bearing" fake:"{number:1,100}"`
+	ID                       int                  `json:"id" fake:"{number:1,100000}"`
+	Name                     string               `json:"name" fake:"{loremipsumword:1}"`
+	Code                     string               `json:"code" fake:"{regex:GC[1-9]{5}}"` // GC12345
+	PremiumOnly              bool                 `json:"premiumOnly" fake:"{bool}"`
+	FavoritePoints           int                  `json:"favoritePoints" fake:"{number:1,1000}"`
+	GeocacheType             int                  `json:"geocacheType" fake:"{number:1,10}"`
+	ContainerType            int                  `json:"containerType" fake:"{number:1,10}"`
+	Difficulty               float64              `json:"difficulty" fake:"{number:1,5}"`
+	Terrain                  float64              `json:"terrain" fake:"{number:1,5}"`
+	UserFound                bool                 `json:"userFound" fake:"{bool}"`
+	CacheStatus              int                  `json:"cacheStatus" fake:"{number:1,10}"`
+	PostedCoordinates        GeocacheCoordinates  `json:"postedCoordinates"`
+	UserCorrectedCoordinates GeocacheCoordinates  `json:"userCorrectedCoordinates"`
+	DetailsURL               string               `json:"detailsUrl" fake:"{url}"`
+	HasGeotour               bool                 `json:"hasGeotour" fake:"{bool}"`
+	PlacedDate               string               `json:"placedDate" fake:"{date}"`
+	Owner                    GeocacheOwner        `json:"owner"`
+	LastFoundDate            string               `json:"lastFoundDate" fake:"{date}"`
+	TrackableCount           int                  `json:"trackableCount" fake:"{number:1,100}"`
+	Region                   string               `json:"region" fake:"{city}"`
+	Country                  string               `json:"country" fake:"{country}"`
+	Attributes               []GeocacheAttributes `json:"attributes"`
+	Distance                 string               `json:"distance" fake:"{number:1,100}"`
+	Bearing                  string               `json:"bearing" fake:"{number:1,100}"`
 
 	LastFoundTime time.Time // This is a parsed version of LastFoundDate
 	GUID          string    `fake:"{UUID}"` // We read this ourselves from the geocache's page
@@ -422,6 +424,7 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 			return nil, 0, err
 		}
 	}
+	log.Debug("Response:", string(body))
 
 	// Unmarshal body into a GeocacheSearchResponse
 	var searchResponse GeocacheSearchResponse
