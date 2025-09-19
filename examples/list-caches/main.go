@@ -36,9 +36,9 @@ func main() {
 		RadiusMeters:  25000,
 		IgnorePremium: false,
 		ShowDisabled:  BoolPtr(false),
-		SortAsc:       true,
+		SortAsc:       BoolPtr(true),
 		Sort:          "distance",
-		OperationType: "query",
+		OriginType:    "query",
 		HideOwned:     BoolPtr(true),
 		NotFoundBy:    []string{os.Getenv("GEOCACHING_CLIENT_ID")},
 		CacheType: []geocaching.CacheType{

@@ -174,9 +174,9 @@ type SearchTerms struct {
 	ShowDisabled   *bool        `json:"sd,omitempty"`
 	ShowArchived   *bool        `json:"sa,omitempty"`
 	SearchTerm     string       `json:"st,omitempty"`
-	SortAsc        bool         `json:"asc,omitempty"`
-	OperationType  OriginType   `json:"op,omitempty"`
-	OperationID    string       `json:"oid,omitempty"`
+	SortAsc        *bool        `json:"asc,omitempty"`
+	OriginType     OriginType   `json:"op,omitempty"`
+	OriginID       string       `json:"oid,omitempty"`
 	HideOwned      *bool        `json:"ho,omitempty"`
 	HideFound      *bool        `json:"hf,omitempty"`
 	FillGrid       []string     `json:"m,omitempty"`

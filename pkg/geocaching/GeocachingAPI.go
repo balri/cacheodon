@@ -251,16 +251,22 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 	query := req.URL.Query()
 	query.Add("skip", fmt.Sprint(skip))
 	query.Add("take", fmt.Sprint(take))
-	query.Add("asc", fmt.Sprint(st.SortAsc))
-	query.Add("sort", fmt.Sprint(st.Sort))
-	query.Add("properties", "callernote")
-	query.Add("origin", fmt.Sprintf("%f,%f", st.Latitude, st.Longitude))
-	query.Add("rad", fmt.Sprint(st.RadiusMeters))
-	if st.OperationID != "" {
-		query.Add("oid", st.OperationID)
+	if st.SortAsc != nil {
+		query.Add("asc", fmt.Sprint(st.SortAsc))
 	}
-	if st.OperationType != "" {
-		query.Add("op", fmt.Sprint(st.OperationType))
+	if st.Sort != "" {
+		query.Add("sort", fmt.Sprint(st.Sort))
+	}
+	query.Add("properties", "callernote")
+	if st.Latitude != 0 && st.Longitude != 0 && st.RadiusMeters != 0 {
+		query.Add("origin", fmt.Sprintf("%f,%f", st.Latitude, st.Longitude))
+		query.Add("rad", fmt.Sprint(st.RadiusMeters))
+	}
+	if st.OriginID != "" {
+		query.Add("oid", st.OriginID)
+	}
+	if st.OriginType != "" {
+		query.Add("ot", fmt.Sprint(st.OriginType))
 	}
 	if st.ShowPremium != nil {
 		if *st.ShowPremium {
@@ -392,6 +398,7 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 		}
 	}
 	req.URL.RawQuery = query.Encode()
+	log.Debug("Search URL:", req.URL.String())
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0")
 	req.Header.Set("Accept", "application/json")
