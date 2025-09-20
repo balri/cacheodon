@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/balri/cacheodon/pkg/geocaching"
+	log "github.com/sirupsen/logrus"
 )
 
 func BoolPtr(b bool) *bool {
@@ -16,6 +16,7 @@ func main() {
 	config := geocaching.APIConfig{
 		GeocachingAPIURL: "https://www.geocaching.com",
 	}
+	log.SetLevel(log.DebugLevel)
 
 	client, err := geocaching.NewGeocachingAPI(config)
 	if err != nil {

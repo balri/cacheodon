@@ -186,6 +186,7 @@ type Geocache struct {
 	Region                   string               `json:"region" fake:"{city}"`
 	Country                  string               `json:"country" fake:"{country}"`
 	Attributes               []GeocacheAttributes `json:"attributes"`
+	HasCallerNote            bool                 `json:"hasCallerNote" fake:"{bool}"`
 	Distance                 string               `json:"distance" fake:"{number:1,100}"`
 	Bearing                  string               `json:"bearing" fake:"{number:1,100}"`
 
@@ -431,7 +432,6 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 			return nil, 0, err
 		}
 	}
-	log.Debug("Response:", string(body))
 
 	// Unmarshal body into a GeocacheSearchResponse
 	var searchResponse GeocacheSearchResponse
@@ -649,4 +649,41 @@ func (g *GeocachingAPI) Search(st SearchTerms) ([]Geocache, error) {
 	}
 
 	return nonPremiumGeocaches, nil
+}
+
+// GetCacheNoteForGeocache fetches the contents of the <div id="srOnlyCacheNote">...</div> for a given geocache.
+func (g *GeocachingAPI) GetCacheNoteForGeocache(geocache Geocache) (string, error) {
+	url := fmt.Sprintf(g.config.GeocachingAPIURL+"/geocache/%s", geocache.Code)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0")
+	req.Header.Set("Accept", "text/html")
+	req.Header.Set("Accept-Language", "en-GB,en;q=0.5")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Referer", g.config.GeocachingAPIURL+"/play")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Cookie", "BMItemsPerPage=1000;-H Sec-Fetch-Dest:")
+
+	log.Debug("Request: GetCacheNoteForGeocache")
+	resp, err := g.client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// Regex to extract the contents of <div id="srOnlyCacheNote">...</div>
+	rgx := regexp.MustCompile(`<div[^>]+id=["']srOnlyCacheNote["'][^>]*>(.*?)</div>`)
+	matches := rgx.FindStringSubmatch(string(body))
+	if len(matches) < 2 {
+		return "", fmt.Errorf("could not find srOnlyCacheNote div")
+	}
+	return matches[1], nil
 }
