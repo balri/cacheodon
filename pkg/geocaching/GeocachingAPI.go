@@ -253,7 +253,11 @@ func (g *GeocachingAPI) searchQuery(st SearchTerms, skip, take int) ([]Geocache,
 	query.Add("skip", fmt.Sprint(skip))
 	query.Add("take", fmt.Sprint(take))
 	if st.SortAsc != nil {
-		query.Add("asc", fmt.Sprint(st.SortAsc))
+		if *st.SortAsc {
+			query.Add("asc", "true")
+		} else {
+			query.Add("asc", "false")
+		}
 	}
 	if st.Sort != "" {
 		query.Add("sort", fmt.Sprint(st.Sort))
@@ -668,7 +672,7 @@ func (g *GeocachingAPI) GetCacheNoteForGeocache(geocache Geocache) (string, erro
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Cookie", "BMItemsPerPage=1000;-H Sec-Fetch-Dest:")
 
-	log.Debug("Request: GetCacheNoteForGeocache")
+	log.Debug("Request: GetCacheNoteForGeocache ", geocache.Code)
 	resp, err := g.client.Do(req)
 	if err != nil {
 		return "", err
@@ -685,5 +689,9 @@ func (g *GeocachingAPI) GetCacheNoteForGeocache(geocache Geocache) (string, erro
 	if len(matches) < 2 {
 		return "", fmt.Errorf("could not find srOnlyCacheNote div")
 	}
-	return matches[1], nil
+	note := matches[1]
+	note = html.UnescapeString(note)
+	note = strings.ReplaceAll(note, "\n", " ")
+
+	return note, nil
 }

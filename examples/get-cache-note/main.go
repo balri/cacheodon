@@ -16,6 +16,7 @@ func main() {
 	config := geocaching.APIConfig{
 		GeocachingAPIURL: "https://www.geocaching.com",
 	}
+	log.SetLevel(log.DebugLevel)
 
 	client, err := geocaching.NewGeocachingAPI(config)
 	if err != nil {
