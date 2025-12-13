@@ -18,8 +18,8 @@ git status
 git add .
 git commit -m "Extract geocaching code into standalone library; add example usage"
 git push origin library/extract-geocaching
-git tag v0.2.5
-git push origin v0.2.5
+git tag v0.2.6
+git push origin v0.2.6
 ```
 
 # Optional: create a Pull Request
